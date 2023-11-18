@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Dropzone from 'react-dropzone';
 import { PDFDocument } from 'pdf-lib';
 
+
 const App = () => {
   const [pdfDoc, setPdfDoc] = useState(null);
   const [selectedPages, setSelectedPages] = useState([]);
@@ -16,7 +17,7 @@ const App = () => {
           const loadedPdfData = await file.arrayBuffer();
           const loadedPdfDoc = await PDFDocument.load(loadedPdfData);
           setPdfDoc(loadedPdfDoc);
-          setViewPdf(URL.createObjectURL(new Blob([loadedPdfData], { type: 'application/pdf' }))); // Set the uploaded PDF for viewing
+          setViewPdf(URL.createObjectURL(new Blob([loadedPdfData], { type: 'application/pdf' })));
         } catch (error) {
           console.error('Error loading PDF:', error);
         }
@@ -26,12 +27,34 @@ const App = () => {
     }
   };
   
-
   const handlePageSelection = (pageNumber) => {
     const updatedSelectedPages = selectedPages.includes(pageNumber)
       ? selectedPages.filter((page) => page !== pageNumber)
       : [...selectedPages, pageNumber];
     setSelectedPages(updatedSelectedPages);
+  };
+
+  const sendToBackend = async () => {
+    if (pdfDoc && selectedPages.length > 0) {
+      const formData = new FormData();
+      formData.append('pdfFile', new Blob([pdfDoc.save()], { type: 'application/pdf' }));
+      formData.append('selectedPages', JSON.stringify(selectedPages));
+
+      try {
+        const response = await fetch('http://localhost:3000/upload-pdf', { // Update with your backend URL
+          method: 'POST',
+          body: formData,
+        });
+
+        if (response.ok) {
+          console.log('PDF sent to backend successfully');
+        } else {
+          console.error('Failed to send PDF to backend');
+        }
+      } catch (error) {
+        console.error('Error sending PDF to backend:', error);
+      }
+    }
   };
 
   const handleGenerateNewPDF = async () => {
@@ -44,11 +67,14 @@ const App = () => {
 
       const newPdfData = await newPdfDoc.save();
       setNewPdf(newPdfData);
+
+      // Send data to the backend after generating the new PDF
+      sendToBackend();
     }
   };
 
   useEffect(() => {
-    setNewPdf(null); // Reset newPdf state when a new PDF is uploaded
+    setNewPdf(null);
   }, [pdfDoc]);
 
   return (
@@ -90,9 +116,9 @@ const App = () => {
       </button>
 
       {newPdf && (
-         <a
-         href={URL.createObjectURL(new Blob([newPdf], { type: 'application/pdf' }))}
-         download="extracted-pages.pdf">
+        <a
+          href={URL.createObjectURL(new Blob([newPdf], { type: 'application/pdf' }))}
+          download="extracted-pages.pdf">
           Download New PDF
         </a>
       )}
@@ -101,4 +127,3 @@ const App = () => {
 };
 
 export default App;
-
