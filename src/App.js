@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Dropzone from 'react-dropzone';
 import { PDFDocument } from 'pdf-lib';
+import './App.css'; 
 
 
 const App = () => {
