@@ -47,11 +47,9 @@ Clone this repository.
 Install dependencies using npm install.
 Start the development server with npm start
 
-### Important Notes
+### Deployed source:
+    https://6559c6f451cc1b0af73ba28f--euphonious-pegasus-51762e.netlify.app/
 
-Ensure the uploaded file is in PDF format for proper functionality.
-The extracted pages will be saved as a new PDF file for download.
-
-### Credits
-This project utilizes the pdf-lib library for PDF manipulation.
+### Backend git repo:
+    https://github.com/aman99x/pdfWeb-backend
 
